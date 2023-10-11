@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+rm -f image image.raw image.raw.manifest
+
+# TEMPORARY until https://github.com/systemd/mkosi/issues/1967
+BP="mkosi.conf.d/base_packages.conf"
+if true; then
+ echo "[Content]" > $BP
+ echo "Packages=" >> $BP
+ rm -rf TMP
+ debootstrap --print-debs --variant=minbase bookworm TMP | tr " " "\n" | sed '/^[[:space:]]*$/d' | sed -e 's/^/ /' >> $BP
+fi
+
+mkosi
